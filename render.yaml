@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: product-searcher
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python app.py
+    envVars:
+      - key: BRAVE_API_KEY
+        fromDatabase:
+          name: product_searcher_db
+          property: brave_api_key
+      - key: PORT
+        value: "10000"
+    plan: free

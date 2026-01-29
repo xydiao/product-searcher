@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>产品搜索爬虫 - 亚马逊 & TikTok</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔍 产品搜索爬虫</h1>
+            <p class="subtitle">支持亚马逊、TikTok等平台产品搜索</p>
+        </header>
+
+        <main>
+            <div class="search-card">
+                <h2>开始搜索</h2>
+                
+                <form action="/search" method="POST" class="search-form">
+                    <div class="form-group">
+                        <label for="keyword">搜索关键词</label>
+                        <input type="text" 
+                               id="keyword" 
+                               name="keyword" 
+                               placeholder="例如：AI toys, Robot dog, 智能手表"
+                               required>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="platform">选择平台</label>
+                            <select id="platform" name="platform">
+                                <option value="Amazon">🇺🇸 亚马逊 (Amazon)</option>
+                                <option value="TikTok">🎵 TikTok Shop</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="top_n">返回数量</label>
+                            <select id="top_n" name="top_n">
+                                <option value="5">前 5 名</option>
+                                <option value="10" selected>前 10 名</option>
+                                <option value="15">前 15 名</option>
+                                <option value="20">前 20 名</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn-search">
+                        🔍 开始搜索
+                    </button>
+                </form>
+            </div>
+
+            <div class="quick-links">
+                <a href="/history" class="btn-link">
+                    📚 查看搜索历史
+                </a>
+            </div>
+
+            <div class="features">
+                <h3>功能特点</h3>
+                <div class="feature-grid">
+                    <div class="feature-item">
+                        <span class="icon">🌐</span>
+                        <h4>多平台支持</h4>
+                        <p>支持亚马逊、TikTok等主流平台</p>
+                    </div>
+                    <div class="feature-item">
+                        <span class="icon">💾</span>
+                        <h4>历史记录</h4>
+                        <p>自动保存搜索记录，随时查看</p>
+                    </div>
+                    <div class="feature-item">
+                        <span class="icon">📊</span>
+                        <h4>详细数据</h4>
+                        <p>价格、评分、评论数一应俱全</p>
+                    </div>
+                    <div class="feature-item">
+                        <span class="icon">⚡</span>
+                        <h4>快速搜索</h4>
+                        <p>实时搜索，结果即时呈现</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Powered by Brave Search API | 数据仅供参考</p>
+        </footer>
+    </div>
+
+    <!-- Flash消息 -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+</body>
+</html>

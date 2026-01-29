@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>搜索历史</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📚 搜索历史</h1>
+            <p class="subtitle">查看和管理您的搜索记录</p>
+        </header>
+
+        <main>
+            <div class="history-header">
+                <a href="/" class="btn-back">← 返回搜索</a>
+                <div class="search-box">
+                    <input type="text" id="keywordSearch" placeholder="搜索历史记录...">
+                    <button onclick="searchHistory()">🔍</button>
+                </div>
+            </div>
+
+            <div class="history-list" id="historyList">
+                {% if history %}
+                    {% for item in history %}
+                    <div class="history-item" data-keyword="{{ item.keyword }}">
+                        <div class="history-info">
+                            <div class="history-main">
+                                <span class="keyword">{{ item.keyword }}</span>
+                                <span class="platform {{ item.platform|lower }}">{{ item.platform }}</span>
+                            </div>
+                            <div class="history-meta">
+                                <span>📊 {{ item.top_n }} 个结果</span>
+                                <span>🕐 {{ item.created_at[:16] }}</span>
+                                <span class="status {{ item.status }}">{{ item.status }}</span>
+                            </div>
+                        </div>
+                        <div class="history-actions">
+                            <a href="/results/{{ item.search_id }}" class="btn-view">查看详情</a>
+                            <button onclick="deleteHistory('{{ item.search_id }}')" class="btn-delete">删除</button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <p>暂无搜索记录</p>
+                        <a href="/" class="btn-primary">开始搜索</a>
+                    </div>
+                {% endif %}
+            </div>
+        </main>
+
+        <footer>
+            <p>Powered by Brave Search API | 数据仅供参考</p>
+        </footer>
+    </div>
+
+    <script>
+        async function searchHistory() {
+            const keyword = document.getElementById('keywordSearch').value.trim();
+            
+            try {
+                const response = await fetch(`/history/search?keyword=${encodeURIComponent(keyword)}`);
+                const data = await response.json();
+                updateHistoryList(data);
+            } catch (error) {
+                console.error('搜索失败:', error);
+            }
+        }
+
+        function updateHistoryList(items) {
+            const container = document.getElementById('historyList');
+            
+            if (items.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <p>未找到匹配的记录</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            items.forEach(item => {
+                html += `
+                    <div class="history-item" data-keyword="${item.keyword}">
+                        <div class="history-info">
+                            <div class="history-main">
+                                <span class="keyword">${item.keyword}</span>
+                                <span class="platform ${item.platform.toLowerCase()}">${item.platform}</span>
+                            </div>
+                            <div class="history-meta">
+                                <span>📊 ${item.top_n} 个结果</span>
+                                <span>🕐 ${item.created_at.substring(0, 16)}</span>
+                                <span class="status ${item.status}">${item.status}</span>
+                            </div>
+                        </div>
+                        <div class="history-actions">
+                            <a href="/results/${item.search_id}" class="btn-view">查看详情</a>
+                            <button onclick="deleteHistory('${item.search_id}')" class="btn-delete">删除</button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        async function deleteHistory(searchId) {
+            if (!confirm('确定要删除这条记录吗？')) return;
+            
+            try {
+                const response = await fetch(`/history/delete/${searchId}`, {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('删除失败: ' + data.error);
+                }
+            } catch (error) {
+                alert('删除失败: ' + error);
+            }
+        }
+
+        // 回车搜索
+        document.getElementById('keywordSearch').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchHistory();
+            }
+        });
+    </script>
+</body>
+</html>

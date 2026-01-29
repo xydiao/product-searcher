@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>搜索结果 - {{ detail.keyword }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📋 搜索结果</h1>
+            <p class="subtitle">
+                关键词：<strong>{{ detail.keyword }}</strong> | 
+                平台：<strong>{{ detail.platform }}</strong> | 
+                数量：<strong>{{ detail.top_n }}</strong>
+            </p>
+        </header>
+
+        <main>
+            <div class="result-header">
+                <a href="/" class="btn-back">← 返回搜索</a>
+                <a href="/history" class="btn-secondary">📚 历史记录</a>
+            </div>
+
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <span class="stat-value">{{ detail.top_n }}</span>
+                    <span class="stat-label">搜索数量</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">{{ detail.created_at[:10] }}</span>
+                    <span class="stat-label">搜索时间</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">{{ detail.status }}</span>
+                    <span class="stat-label">状态</span>
+                </div>
+            </div>
+
+            <div class="results-table-container">
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            <th>排名</th>
+                            <th>产品名称</th>
+                            <th>价格</th>
+                            <th>评分</th>
+                            <th>评论数</th>
+                            <th>来源</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in detail.details %}
+                        <tr>
+                            <td class="rank">{{ item.rank }}</td>
+                            <td class="title">
+                                <a href="{{ item.url }}" target="_blank" rel="noopener">
+                                    {{ item.title }}
+                                </a>
+                                <p class="description">{{ item.description[:100] }}...</p>
+                            </td>
+                            <td class="price">{{ item.price or '-' }}</td>
+                            <td class="rating">{{ item.rating or '-' }}</td>
+                            <td class="reviews">{{ item.reviews or '-' }}</td>
+                            <td class="source">{{ item.source or '-' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="actions-bar">
+                <button onclick="exportCSV()" class="btn-export">📥 导出CSV</button>
+                <a href="/" class="btn-primary">🔍 新搜索</a>
+            </div>
+        </main>
+
+        <footer>
+            <p>Powered by Brave Search API | 数据仅供参考</p>
+        </footer>
+    </div>
+
+    <script>
+        function exportCSV() {
+            // 简单的CSV导出
+            let csv = '排名,产品名称,价格,评分,评论数,来源,链接\n';
+            
+            {% for item in detail.details %}
+            csv += '{{ item.rank }},"{{ item.title.replace('"', '""') }}","{{ item.price or '' }}","{{ item.rating or '' }}","{{ item.reviews or '' }}","{{ item.source or '' }}","{{ item.url }}"';
+            csv += '\n';
+            {% endfor %}
+            
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'search_results_{{ detail.keyword }}_{{ detail.created_at[:10] }}.csv';
+            link.click();
+        }
+    </script>
+</body>
+</html>

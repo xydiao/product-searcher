@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>错误页面</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>出错了</h1>
+        </header>
+        
+        <main>
+            <div class="error-page">
+                <h1>{{ error.code }}</h1>
+                <p>抱歉，发生了错误。请返回首页重新操作。</p>
+                <a href="/" class="btn-primary">返回首页</a>
+            </div>
+        </main>
+        
+        <footer>
+            <p>Powered by Brave Search API</p>
+        </footer>
+    </div>
+</body>
+</html>
