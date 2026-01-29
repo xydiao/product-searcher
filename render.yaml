@@ -5,7 +5,7 @@ services:
     buildCommand: pip install -r requirements.txt
     startCommand: python app.py
     envVars:
-      - key: BSAgdn1sl1bYrniqvGdpRAefrqF5glX
+      - key: BRAVE_API_KEY
         fromDatabase:
           name: product_searcher_db
           property: BSAgdn1sl1bYrniqvGdpRAefrqF5glX
