@@ -8,7 +8,7 @@ services:
       - key: BSAgdn1sl1bYrniqvGdpRAefrqF5glX
         fromDatabase:
           name: product_searcher_db
-          property: brave_api_key
+          property: BSAgdn1sl1bYrniqvGdpRAefrqF5glX
       - key: PORT
         value: "10000"
     plan: free
